@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/threeq/goassert.svg?branch=master)](https://travis-ci.org/threeq/goassert)
 [![codecov](https://codecov.io/gh/threeq/goassert/branch/master/graph/badge.svg)](https://codecov.io/gh/threeq/goassert)
 
-一个流畅的断言库。实现参考 [testify](https://github.com/stretchr/testify) 和 [assertj](http://joel-costigliola.github.io/assertj)。
+A fluent test assertion library。Implementation reference [testify](https://github.com/stretchr/testify) 和 [assertj](http://joel-costigliola.github.io/assertj)。
 
 # Install
 
