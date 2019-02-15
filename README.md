@@ -14,7 +14,7 @@ go get github.com/threeq/goassert
 # Use
 
 1. import `goassert` package
- 
+
 ```go
 import "github.com/threeq/goassert"
 ```
