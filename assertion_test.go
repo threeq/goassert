@@ -8,7 +8,7 @@ import (
 // helper util
 func failed(fn func(so *assertProxy)) bool {
 	mockT := new(testing.T)
-	so := Assertion(mockT)
+	so := New(mockT)
 	fn(so)
 	return mockT.Failed()
 }
@@ -74,7 +74,7 @@ func TestFluentAssertion_That(t *testing.T) {
 
 func TestFluentAssertion_Equal(t *testing.T) {
 	mockT := new(testing.T)
-	so := Assertion(mockT)
+	so := New(mockT)
 
 	so.That("1").Equal("1")
 	if mockT.Failed() {
@@ -82,28 +82,28 @@ func TestFluentAssertion_Equal(t *testing.T) {
 	}
 
 	mockT = new(testing.T)
-	so = Assertion(mockT)
+	so = New(mockT)
 	so.That([]int{1, 2, 3}).Equal([]int{1, 2, 3})
 	if mockT.Failed() {
 		t.Errorf("FluentAssertion.Equal is error")
 	}
 
 	mockT = new(testing.T)
-	so = Assertion(mockT)
+	so = New(mockT)
 	so.That([]int{1, 2, 3}).Equal([3]int{1, 2, 3})
 	if !mockT.Failed() {
 		t.Errorf("FluentAssertion.Equal is error")
 	}
 
 	mockT = new(testing.T)
-	so = Assertion(mockT)
+	so = New(mockT)
 	so.That("1").Equal(1)
 	if !mockT.Failed() {
 		t.Errorf("FluentAssertion.Equal is error")
 	}
 
 	mockT = new(testing.T)
-	so = Assertion(mockT)
+	so = New(mockT)
 	so.That(func() {}).Equal(func() {})
 	if !mockT.Failed() {
 		t.Errorf("FluentAssertion.Equal is error")
@@ -114,14 +114,14 @@ func TestFluentAssertion_EqualIgnoringCase(t *testing.T) {
 	var mockT *testing.T
 	var so *assertProxy
 	mockT = new(testing.T)
-	so = Assertion(mockT)
+	so = New(mockT)
 	so.That("abc").EqualIgnoringCase("abc")
 	if mockT.Failed() {
 		t.Errorf("FluentAssertion.EqualIgnoringCase is error")
 	}
 
 	mockT = new(testing.T)
-	so = Assertion(mockT)
+	so = New(mockT)
 	so.That("abc").EqualIgnoringCase("AbC")
 	if mockT.Failed() {
 		t.Errorf("FluentAssertion.EqualIgnoringCase is error")
@@ -150,35 +150,35 @@ func TestFluentAssertion_NotEqual(t *testing.T) {
 	var mockT *testing.T
 	var so *assertProxy
 	mockT = new(testing.T)
-	so = Assertion(mockT)
+	so = New(mockT)
 	so.That("1").NotEqual("1")
 	if !mockT.Failed() {
 		t.Errorf("FluentAssertion.Equal is error")
 	}
 
 	mockT = new(testing.T)
-	so = Assertion(mockT)
+	so = New(mockT)
 	so.That([]int{1, 2, 3}).NotEqual([]int{1, 2, 3})
 	if !mockT.Failed() {
 		t.Errorf("FluentAssertion.Equal is error")
 	}
 
 	mockT = new(testing.T)
-	so = Assertion(mockT)
+	so = New(mockT)
 	so.That([]int{1, 2, 3}).NotEqual([3]int{1, 2, 3})
 	if mockT.Failed() {
 		t.Errorf("FluentAssertion.Equal is error")
 	}
 
 	mockT = new(testing.T)
-	so = Assertion(mockT)
+	so = New(mockT)
 	so.That("1").NotEqual(1)
 	if mockT.Failed() {
 		t.Errorf("FluentAssertion.Equal is error")
 	}
 
 	mockT = new(testing.T)
-	so = Assertion(mockT)
+	so = New(mockT)
 	so.That(func() {}).NotEqual(func() {})
 	if !mockT.Failed() {
 		t.Errorf("FluentAssertion.Equal is error")
@@ -187,7 +187,7 @@ func TestFluentAssertion_NotEqual(t *testing.T) {
 
 func TestFluentAssertion_StartsWith(t *testing.T) {
 	mockT := new(testing.T)
-	so := Assertion(mockT)
+	so := New(mockT)
 	so.That("你好").As("字符串").
 		StartsWith("你")
 
@@ -196,7 +196,7 @@ func TestFluentAssertion_StartsWith(t *testing.T) {
 	}
 
 	mockT = new(testing.T)
-	so = Assertion(mockT)
+	so = New(mockT)
 	so.That("你好").As("字符串").
 		StartsWith("好")
 
@@ -205,7 +205,7 @@ func TestFluentAssertion_StartsWith(t *testing.T) {
 	}
 
 	mockT = new(testing.T)
-	so = Assertion(mockT)
+	so = New(mockT)
 	so.That([]string{"nihao", "你好", "你", "好"}).
 		As("切片").
 		StartsWith([]string{"nihao"}).
@@ -216,7 +216,7 @@ func TestFluentAssertion_StartsWith(t *testing.T) {
 	}
 
 	mockT = new(testing.T)
-	so = Assertion(mockT)
+	so = New(mockT)
 	so.That([]string{"nihao", "你好", "你", "好"}).
 		As("切片").
 		StartsWith([]string{"dfdfdf"}).
@@ -228,7 +228,7 @@ func TestFluentAssertion_StartsWith(t *testing.T) {
 
 	///////////////
 	mockT = new(testing.T)
-	so = Assertion(mockT)
+	so = New(mockT)
 	so.That([]string{"nihao", "你好", "你", "好"}).
 		As("切片").
 		StartsWith("sdfsdf")
@@ -238,7 +238,7 @@ func TestFluentAssertion_StartsWith(t *testing.T) {
 	}
 
 	mockT = new(testing.T)
-	so = Assertion(mockT)
+	so = New(mockT)
 	so.That([]string{"nihao", "你好", "你", "好"}).
 		As("切片").
 		StartsWith([]string{"nihao", "你好", "你", "好", "123213", "12321"})
@@ -248,7 +248,7 @@ func TestFluentAssertion_StartsWith(t *testing.T) {
 	}
 
 	mockT = new(testing.T)
-	so = Assertion(mockT)
+	so = New(mockT)
 	so.That(12323).
 		StartsWith(123)
 
@@ -259,7 +259,7 @@ func TestFluentAssertion_StartsWith(t *testing.T) {
 
 func TestFluentAssertion_EndsWith(t *testing.T) {
 	mockT := new(testing.T)
-	so := Assertion(mockT)
+	so := New(mockT)
 	so.That("你好").As("字符串").
 		EndsWith("好")
 
@@ -268,7 +268,7 @@ func TestFluentAssertion_EndsWith(t *testing.T) {
 	}
 
 	mockT = new(testing.T)
-	so = Assertion(mockT)
+	so = New(mockT)
 	so.That("你好").As("字符串").
 		EndsWith("你")
 
@@ -277,7 +277,7 @@ func TestFluentAssertion_EndsWith(t *testing.T) {
 	}
 
 	mockT = new(testing.T)
-	so = Assertion(mockT)
+	so = New(mockT)
 	so.That([]string{"nihao", "你好", "你", "好"}).
 		As("切片").
 		EndsWith([]string{"好"}).
@@ -288,7 +288,7 @@ func TestFluentAssertion_EndsWith(t *testing.T) {
 	}
 
 	mockT = new(testing.T)
-	so = Assertion(mockT)
+	so = New(mockT)
 	so.That([]string{"nihao", "你好", "你", "好"}).
 		As("切片").
 		EndsWith([]string{"dfdfdf"}).
@@ -300,7 +300,7 @@ func TestFluentAssertion_EndsWith(t *testing.T) {
 
 	///////////////
 	mockT = new(testing.T)
-	so = Assertion(mockT)
+	so = New(mockT)
 	so.That([]string{"nihao", "你好", "你", "好"}).
 		As("切片").
 		EndsWith("sdfsdf")
@@ -310,7 +310,7 @@ func TestFluentAssertion_EndsWith(t *testing.T) {
 	}
 
 	mockT = new(testing.T)
-	so = Assertion(mockT)
+	so = New(mockT)
 	so.That([]string{"nihao", "你好", "你", "好"}).
 		As("切片").
 		EndsWith([]string{"nihao", "你好", "你", "好", "123213", "12321"})
@@ -320,7 +320,7 @@ func TestFluentAssertion_EndsWith(t *testing.T) {
 	}
 
 	mockT = new(testing.T)
-	so = Assertion(mockT)
+	so = New(mockT)
 	so.That(12323).
 		EndsWith(123)
 
@@ -335,42 +335,42 @@ func TestFluentAssertion_Len(t *testing.T) {
 	var so *assertProxy
 
 	mockT = new(testing.T)
-	so = Assertion(mockT)
+	so = New(mockT)
 	so.That("1").Len(1)
 	if mockT.Failed() {
 		t.Errorf("FluentAssertion.Len is error")
 	}
 
 	mockT = new(testing.T)
-	so = Assertion(mockT)
+	so = New(mockT)
 	so.That("").Len(0)
 	if mockT.Failed() {
 		t.Errorf("FluentAssertion.Len is error")
 	}
 
 	mockT = new(testing.T)
-	so = Assertion(mockT)
+	so = New(mockT)
 	so.That([]int{}).Len(0)
 	if mockT.Failed() {
 		t.Errorf("FluentAssertion.Len is error")
 	}
 
 	mockT = new(testing.T)
-	so = Assertion(mockT)
+	so = New(mockT)
 	so.That([]int{1, 2, 3}).Len(3)
 	if mockT.Failed() {
 		t.Errorf("FluentAssertion.Len is error")
 	}
 
 	mockT = new(testing.T)
-	so = Assertion(mockT)
+	so = New(mockT)
 	so.That([]int{1, 2, 3}).Len(2)
 	if !mockT.Failed() {
 		t.Errorf("FluentAssertion.Len is error")
 	}
 
 	mockT = new(testing.T)
-	so = Assertion(mockT)
+	so = New(mockT)
 	so.That(1).Len(2)
 	if !mockT.Failed() {
 		t.Errorf("FluentAssertion.Len is error")
@@ -977,14 +977,14 @@ func TestFluentAssertion_Panics(t *testing.T) {
 
 func TestAssertProxy_Panics(t *testing.T) {
 	mockT := new(testing.T)
-	assert := Assertion(mockT)
+	assert := New(mockT)
 	assert.Panics(func() {})
 	if !mockT.Failed() {
 		t.Errorf("assertProxy.Panics error")
 	}
 
 	mockT = new(testing.T)
-	assert = Assertion(mockT)
+	assert = New(mockT)
 	assert.Panics(func() {
 		panic("has panic")
 	})
@@ -994,7 +994,7 @@ func TestAssertProxy_Panics(t *testing.T) {
 }
 
 func TestAssertProxy_That(t *testing.T) {
-	so := Assertion(t).That("")
+	so := New(t).That("")
 	if so.t != t {
 		t.Errorf("assertProxy.That error")
 	}

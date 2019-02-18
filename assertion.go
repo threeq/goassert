@@ -14,12 +14,28 @@ type TestingT interface {
 	Errorf(format string, args ...interface{})
 }
 
+// New object
+//
+// The encapsulation real value is an assertable object
+//
+// 	import "github.com/threeq/goassert"
+//
+//	// method one:
+//	fa := goassert.That(t, "hello world")
+//
+//	// method two:
+//	so := goassert.New(t)
+//	fa := so.That("hello world")
 type FluentAssertion struct {
 	t      TestingT
 	actual interface{}
 	name   string
 }
 
+// Encapsulation new assertable object with new real value
+//
+//      so := goassert.New(t)
+//      fa := so.That("hello world")
 func (assert *FluentAssertion) That(actual interface{}) *FluentAssertion {
 	return &FluentAssertion{
 		assert.t,
@@ -28,6 +44,11 @@ func (assert *FluentAssertion) That(actual interface{}) *FluentAssertion {
 	}
 }
 
+// Judge equal
+//
+//	so := goassert.New(t)
+//	so.That("hello world").
+//		Equal("hello world")
 func (assert *FluentAssertion) Equal(expected interface{}, msgAndArgs ...interface{}) *FluentAssertion {
 
 	actual := assert.actual
@@ -46,6 +67,12 @@ func (assert *FluentAssertion) Equal(expected interface{}, msgAndArgs ...interfa
 	return assert
 }
 
+// Judge ignoring case equal.
+// Only `string` type are supported.
+//
+//	so := goassert.New(t)
+//	so.That("hello world").
+//		EqualIgnoringCase("Hello World")
 func (assert *FluentAssertion) EqualIgnoringCase(expected interface{}, msgAndArgs ...interface{}) *FluentAssertion {
 	actual,ok1 := assert.actual.(string)
 	exp,ok2 := expected.(string)
@@ -68,6 +95,11 @@ func (assert *FluentAssertion) EqualIgnoringCase(expected interface{}, msgAndArg
 	return assert
 }
 
+// Judge not equal
+//
+//	so := goassert.New(t)
+//	so.That("hello world").
+//		NotEqual("hello world!")
 func (assert *FluentAssertion) NotEqual(expected interface{}, msgAndArgs ...interface{}) *FluentAssertion {
 
 	res, msg := NotEq(expected)(assert.actual)
@@ -82,11 +114,25 @@ func (assert *FluentAssertion) NotEqual(expected interface{}, msgAndArgs ...inte
 }
 
 // As() is used to describe the test and will be shown before the error message
+//
+//	so := goassert.New(t)
+//	so.That("hello world").As("test xxx feature")
 func (assert *FluentAssertion) As(desc string) *FluentAssertion {
 	assert.name = desc
 	return assert
 }
 
+// Judge start element.
+//
+//	so := goassert.New(t)
+//	so.That("hello world").
+//		StartsWith("hello")
+//
+//	so.That([]int{1,2,3}).
+//		StartsWith(1)
+//
+//	so.That([]int{1,2,3}).
+//		StartsWith([]int{1,2})
 func (assert *FluentAssertion) StartsWith(expected interface{}, msgAndArgs ...interface{}) *FluentAssertion {
 	et, ek := typeAndKind(expected)
 	at, _ := typeAndKind(assert.actual)
@@ -133,6 +179,17 @@ func (assert *FluentAssertion) StartsWith(expected interface{}, msgAndArgs ...in
 	return assert
 }
 
+// Judge end element.
+//
+//	so := goassert.New(t)
+//	so.That("hello world").
+//		EndsWith("world")
+//
+//	so.That([]int{1,2,3}).
+//		EndsWith(3)
+//
+//	so.That([]int{1,2,3}).
+//		EndsWith([]int{2,3})
 func (assert *FluentAssertion) EndsWith(expected interface{}, msgAndArgs ...interface{}) *FluentAssertion {
 	et, ek := typeAndKind(expected)
 	at, _ := typeAndKind(assert.actual)
@@ -183,6 +240,13 @@ func (assert *FluentAssertion) EndsWith(expected interface{}, msgAndArgs ...inte
 
 // Len asserts that the specified object has specific length.
 // Len also fails if the object has a type that len() not accept.
+//
+//	so := goassert.New(t)
+//	so.That("123").
+//		Len(3)
+//
+//	so.That([]int{1,2,3}).
+//		Len(3)
 func (assert *FluentAssertion) Len(length int, msgAndArgs ...interface{}) *FluentAssertion {
 	ok, l := getLen(assert.actual)
 	if !ok {
@@ -196,10 +260,15 @@ func (assert *FluentAssertion) Len(length int, msgAndArgs ...interface{}) *Fluen
 }
 
 
-// Contains asserts that the specified string, list(array, slice...) or map contains the
+// Contain asserts that the specified string, list(array, slice...) or map contains the
 // specified substring or element.
 //
-//    assert.Contains("World")
+//	so := goassert.New(t)
+//	so.That("123").
+//		Contains("3")
+//
+//	so.That([]int{1,2,3}).
+//		Contains(3)
 func (assert *FluentAssertion) Contains(expected interface{}, msgAndArgs ...interface{}) *FluentAssertion {
 	ok, found := includeElement(assert.actual, expected)
 	if !ok {
@@ -212,6 +281,15 @@ func (assert *FluentAssertion) Contains(expected interface{}, msgAndArgs ...inte
 	return assert
 }
 
+// NotContain asserts that the specified string, list(array, slice...) or map not contains the
+// specified substring or element.
+//
+//	so := goassert.New(t)
+//	so.That("123").
+//		NotContain("4")
+//
+//	so.That([]int{1,2,3}).
+//		NotContain(4)
 func (assert *FluentAssertion) NotContain(expected interface{}, msgAndArgs ...interface{}) *FluentAssertion {
 	ok, found := includeElement(assert.actual, expected)
 	if !ok {
@@ -224,6 +302,15 @@ func (assert *FluentAssertion) NotContain(expected interface{}, msgAndArgs ...in
 	return assert
 }
 
+// In asserts that the specified substring or element in
+// specified string, list(array, slice...) or map .
+//
+//	so := goassert.New(t)
+//	so.That("3").
+//		In("123")
+//
+//	so.That(3).
+//		In([]int{1,2,3})
 func (assert *FluentAssertion) In(expected interface{}, msgAndArgs ...interface{}) *FluentAssertion {
 	ok, found := includeElement(expected, assert.actual)
 	if !ok {
@@ -236,6 +323,15 @@ func (assert *FluentAssertion) In(expected interface{}, msgAndArgs ...interface{
 	return assert
 }
 
+// NotIn asserts that the specified substring or element not in
+// specified string, list(array, slice...) or map .
+//
+//	so := goassert.New(t)
+//	so.That("4").
+//		NotIn("123")
+//
+//	so.That(4).
+//		NotIn([]int{1,2,3})
 func (assert *FluentAssertion) NotIn(expected interface{}, msgAndArgs ...interface{}) *FluentAssertion {
 	ok, found := includeElement(expected, assert.actual)
 	if !ok {
@@ -248,6 +344,11 @@ func (assert *FluentAssertion) NotIn(expected interface{}, msgAndArgs ...interfa
 	return assert
 }
 
+// HasMessage asserts that the specified error message is specified string.
+//
+//	so := goassert.New(t)
+//	so.That(err).
+//		HasMessage("123")
 func (assert *FluentAssertion) HasMessage(expected string, msgAndArgs ...interface{}) *FluentAssertion {
 	if assert.actual == nil {
 		Fail(assert, "An error is expected but got nil.", msgAndArgs...)
@@ -268,6 +369,11 @@ func (assert *FluentAssertion) HasMessage(expected string, msgAndArgs ...interfa
 	return assert
 }
 
+// IsType asserts that the specified value is specified type.
+//
+//	so := goassert.New(t)
+//	so.That("123").
+//		IsType(string(""))
 func (assert *FluentAssertion) IsType(expectedType interface{}, msgAndArgs ...interface{}) *FluentAssertion {
 	if !ObjectsAreEqual(reflect.TypeOf(assert.actual), reflect.TypeOf(expectedType)) {
 		Fail(assert, fmt.Sprintf("Object expected to be of type %v, but was %v",
@@ -276,6 +382,11 @@ func (assert *FluentAssertion) IsType(expectedType interface{}, msgAndArgs ...in
 	return assert
 }
 
+// IsType asserts that the specified value type is implements specified interface.
+//
+//	so := goassert.New(t)
+//	so.That(f).
+//		Implements((*io.Reader)(nil))
 func (assert *FluentAssertion) Implements(interfaceObject interface{}, msgAndArgs ...interface{}) *FluentAssertion {
 	interfaceType := reflect.TypeOf(interfaceObject).Elem()
 
@@ -290,6 +401,13 @@ func (assert *FluentAssertion) Implements(interfaceObject interface{}, msgAndArg
 	return assert
 }
 
+// Is asserts that the specified value is match specified condition.
+//
+//	import . "github.com/threeq/goassert"
+//
+//	so := goassert.New(t)
+//	so.That(nil).
+//		Is(Empty)
 func (assert *FluentAssertion) Is(condition Condition, msgAndArgs ...interface{}) *FluentAssertion {
 	result, msg := condition(assert.actual)
 	if !result {
@@ -302,6 +420,13 @@ func (assert *FluentAssertion) Is(condition Condition, msgAndArgs ...interface{}
 	return assert
 }
 
+// Not asserts that the specified value is not match specified condition.
+//
+//	import . "github.com/threeq/goassert"
+//
+//	so := goassert.New(t)
+//	so.That("").
+//		Is(Nil)
 func (assert *FluentAssertion) Not(condition Condition, msgAndArgs ...interface{}) *FluentAssertion {
 	result, msg := condition(assert.actual)
 	if result {
@@ -314,6 +439,13 @@ func (assert *FluentAssertion) Not(condition Condition, msgAndArgs ...interface{
 	return assert
 }
 
+// AllOf asserts that the specified value is match all condition.
+//
+//	import . "github.com/threeq/goassert"
+//
+//	so := goassert.New(t)
+//	so.That("").
+//		AllOf(Not(Nil), Empty, Eq(""))
 func (assert *FluentAssertion) AllOf(conditions ...Condition) *FluentAssertion {
 	result, msg := And(conditions...)(assert.actual)
 	if !result {
@@ -326,6 +458,13 @@ func (assert *FluentAssertion) AllOf(conditions ...Condition) *FluentAssertion {
 	return assert
 }
 
+// AllOf asserts that the specified value is match any one condition.
+//
+//	import . "github.com/threeq/goassert"
+//
+//	so := goassert.New(t)
+//	so.That("").
+//		AnyOf(Nil, Empty, Eq("123"))
 func (assert *FluentAssertion) AnyOf(conditions ...Condition) *FluentAssertion {
 	result, msg := Or(conditions...)(assert.actual)
 	if !result {
@@ -340,7 +479,9 @@ func (assert *FluentAssertion) AnyOf(conditions ...Condition) *FluentAssertion {
 
 // Panics asserts that the code inside the specified PanicTestFunc panics.
 //
-//   assert.Panics(t, func(){ GoCrazy() })
+//	so := goassert.New(t)
+//	so.That(nil).
+//		Panics(func(){ GoCrazy() })
 func (assert *FluentAssertion) Panics(f PanicTestFunc, msgAndArgs ...interface{}) *FluentAssertion {
 
 	if funcDidPanic, panicValue := didPanic(f); !funcDidPanic {
@@ -353,8 +494,11 @@ func (assert *FluentAssertion) Panics(f PanicTestFunc, msgAndArgs ...interface{}
 
 // Regexp asserts that a specified regexp matches a string.
 //
-//  assert.Regexp(t, regexp.MustCompile("start"), "it's starting")
-//  assert.Regexp(t, "start...$", "it's not starting")
+//	so := goassert.New(t)
+//	so.That("it's starting").
+//		Regexp(regexp.MustCompile("start"))
+//	so.That("it's not starting").
+//		Regexp("start...$")
 func (assert *FluentAssertion) Regexp(rx interface{}, msgAndArgs ...interface{}) *FluentAssertion {
 
 	match := matchRegexp(rx, assert.actual)
@@ -368,8 +512,11 @@ func (assert *FluentAssertion) Regexp(rx interface{}, msgAndArgs ...interface{})
 
 // NotRegexp asserts that a specified regexp does not match a string.
 //
-//  assert.NotRegexp(regexp.MustCompile("starts"), "it's starting")
-//  assert.NotRegexp("^start", "it's not starting")
+//	so := goassert.New(t)
+//	so.That("it's starting").
+//		NotRegexp(regexp.MustCompile("starts"))
+//	so.That("it's not starting").
+//		NotRegexp("^start")
 func (assert *FluentAssertion) NotRegexp(rx interface{}, msgAndArgs ...interface{}) *FluentAssertion {
 	match := matchRegexp(rx, assert.actual)
 
@@ -382,6 +529,14 @@ func (assert *FluentAssertion) NotRegexp(rx interface{}, msgAndArgs ...interface
 }
 
 // Zero asserts that i is the zero value for its type.
+//
+//	so := goassert.New(t)
+//	so.That("").
+//		Zero()
+//	so.That(0).
+//		Zero()
+//	so.That(nil).
+//		Zero()
 func (assert *FluentAssertion) Zero(msgAndArgs ...interface{}) *FluentAssertion {
 	i := assert.actual
 	if i != nil && !reflect.DeepEqual(i, reflect.Zero(reflect.TypeOf(i)).Interface()) {
@@ -391,6 +546,12 @@ func (assert *FluentAssertion) Zero(msgAndArgs ...interface{}) *FluentAssertion 
 }
 
 // NotZero asserts that i is not the zero value for its type.
+//
+//	so := goassert.New(t)
+//	so.That("123").
+//		NotZero()
+//	so.That(2).
+//		NotZero()
 func (assert *FluentAssertion) NotZero(msgAndArgs ...interface{}) *FluentAssertion {
 	i := assert.actual
 	if i == nil || reflect.DeepEqual(i, reflect.Zero(reflect.TypeOf(i)).Interface()) {
@@ -440,7 +601,9 @@ func (assert *FluentAssertion) DirExists(msgAndArgs ...interface{}) *FluentAsser
 
 // JSONEq asserts that two JSON strings are equivalent.
 //
-//  assert.JSONEq(t, `{"hello": "world", "foo": "bar"}`, `{"foo": "bar", "hello": "world"}`)
+//	so := goassert.New(t)
+//	so.That(`{"hello": "world", "foo": "bar"}`).
+//		JSONEq(`{"foo": "bar", "hello": "world"}`)
 func (assert *FluentAssertion) JSONEq(expected string, msgAndArgs ...interface{}) *FluentAssertion {
 
 	var expectedJSONAsInterface, actualJSONAsInterface interface{}
@@ -464,6 +627,10 @@ type assertProxy struct {
 	t TestingT
 }
 
+// Encapsulation new assertable object with new real value
+//
+//	so := goassert.New(t)
+//	fa := so.That("123")
 func (tp *assertProxy) That(that interface{}) *FluentAssertion {
 	return &FluentAssertion{
 		tp.t,
@@ -474,7 +641,8 @@ func (tp *assertProxy) That(that interface{}) *FluentAssertion {
 
 // Panics asserts that the code inside the specified PanicTestFunc panics.
 //
-//   assert.Panics(t, func(){ GoCrazy() })
+//	so := goassert.New(t)
+//	so.Panics(func(){ GoCrazy() })
 func (tp *assertProxy) Panics(f PanicTestFunc, msgAndArgs ...interface{}) *assertProxy {
 
 	assert := &FluentAssertion{
@@ -489,12 +657,15 @@ func (tp *assertProxy) Panics(f PanicTestFunc, msgAndArgs ...interface{}) *asser
 	return tp
 }
 
-func Assertion(t TestingT) *assertProxy {
+func New(t TestingT) *assertProxy {
 	return &assertProxy{
 		t,
 	}
 }
 
+// Encapsulation new assertable object with new real value
+//
+//	fa := goassert.That(t, "hello world")
 func That(t TestingT, actual interface{}) *FluentAssertion {
 	return &FluentAssertion{
 		t,
