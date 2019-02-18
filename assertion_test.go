@@ -126,6 +126,24 @@ func TestFluentAssertion_EqualIgnoringCase(t *testing.T) {
 	if mockT.Failed() {
 		t.Errorf("FluentAssertion.EqualIgnoringCase is error")
 	}
+
+	if !failed(func(so *assertProxy) {
+		so.That(123).EqualIgnoringCase("123")
+	}) {
+		t.Errorf("FluentAssertion.EqualIgnoringCase is error")
+	}
+
+	if !failed(func(so *assertProxy) {
+		so.That("123").EqualIgnoringCase(123)
+	}) {
+		t.Errorf("FluentAssertion.EqualIgnoringCase is error")
+	}
+
+	if !failed(func(so *assertProxy) {
+		so.That("123").EqualIgnoringCase("234")
+	}) {
+		t.Errorf("FluentAssertion.EqualIgnoringCase is error")
+	}
 }
 
 func TestFluentAssertion_NotEqual(t *testing.T) {
@@ -426,6 +444,12 @@ func TestFluentAssertion_Contains(t *testing.T) {
 	}) {
 		t.Errorf("FluentAssertion.Contains is error")
 	}
+
+	if !failed(func(so *assertProxy) {
+		so.That(2).Contains(333)
+	}) {
+		t.Errorf("FluentAssertion.Contains is error")
+	}
 }
 
 func TestFluentAssertion_NotContain(t *testing.T) {
@@ -494,6 +518,12 @@ func TestFluentAssertion_NotContain(t *testing.T) {
 	}) {
 		t.Errorf("FluentAssertion.NotContain is error")
 	}
+
+	if !failed(func(so *assertProxy) {
+		so.That(2).NotContain(333)
+	}) {
+		t.Errorf("FluentAssertion.NotContain is error")
+	}
 }
 
 func TestFluentAssertion_In(t *testing.T) {
@@ -532,9 +562,31 @@ func TestFluentAssertion_In(t *testing.T) {
 	}) {
 		t.Errorf("FluentAssertion.In is error")
 	}
+
+	if !failed(func(so *assertProxy) {
+		so.That(4).In(4)
+	}) {
+		t.Errorf("FluentAssertion.In is error")
+	}
 }
 
-func TestFluentAssertion_NotIn(t *testing.T) {
+func TestFluentAssertion_NotIn_success(t *testing.T) {
+
+	if failed(func(so *assertProxy) {
+		so.That("4").NotIn("123")
+	}) {
+		t.Errorf("FluentAssertion.NotIn is error")
+	}
+
+	if failed(func(so *assertProxy) {
+		so.That(4).NotIn([]int{1, 2, 3})
+	}) {
+		t.Errorf("FluentAssertion.NotIn is error")
+	}
+
+}
+
+func TestFluentAssertion_NotIn_failure(t *testing.T) {
 	if !failed(func(so *assertProxy) {
 		so.That("").NotIn("")
 	}) {
@@ -559,17 +611,12 @@ func TestFluentAssertion_NotIn(t *testing.T) {
 		t.Errorf("FluentAssertion.NotIn is error")
 	}
 
-	if failed(func(so *assertProxy) {
-		so.That("4").NotIn("123")
+	if !failed(func(so *assertProxy) {
+		so.That(4).NotIn(3)
 	}) {
 		t.Errorf("FluentAssertion.NotIn is error")
 	}
 
-	if failed(func(so *assertProxy) {
-		so.That(4).NotIn([]int{1, 2, 3})
-	}) {
-		t.Errorf("FluentAssertion.NotIn is error")
-	}
 }
 
 func TestFluentAssertion_Is(t *testing.T) {
@@ -712,6 +759,12 @@ func TestFluentAssertion_DirExists(t *testing.T) {
 	}) {
 		t.Error("FluentAssertion.DirExists string error")
 	}
+
+	if !failed(func(so *assertProxy) {
+		so.That("/bin/ls").DirExists()
+	}) {
+		t.Error("FluentAssertion.FileExists string error")
+	}
 }
 
 func TestFluentAssertion_FileExists(t *testing.T) {
@@ -726,6 +779,12 @@ func TestFluentAssertion_FileExists(t *testing.T) {
 	}) {
 		t.Error("FluentAssertion.FileExists string error")
 	}
+
+	if !failed(func(so *assertProxy) {
+		so.That("/bin").FileExists()
+	}) {
+		t.Error("FluentAssertion.FileExists string error")
+	}
 }
 
 func TestFluentAssertion_HasMessage(t *testing.T) {
@@ -737,6 +796,18 @@ func TestFluentAssertion_HasMessage(t *testing.T) {
 
 	if !failed(func(so *assertProxy) {
 		so.That(errors.New("error error123")).HasMessage("errorerror")
+	}) {
+		t.Error("FluentAssertion.HasMessage error")
+	}
+
+	if !failed(func(so *assertProxy) {
+		so.That(nil).HasMessage("errorerror")
+	}) {
+		t.Error("FluentAssertion.HasMessage error")
+	}
+
+	if !failed(func(so *assertProxy) {
+		so.That("errorerror").HasMessage("errorerror")
 	}) {
 		t.Error("FluentAssertion.HasMessage error")
 	}
@@ -766,9 +837,15 @@ func TestFluentAssertion_Implements(t *testing.T) {
 	}) {
 		t.Error("FluentAssertion.Implements error")
 	}
+
+	if !failed(func(so *assertProxy) {
+		so.That(nil).Implements((*testInterface)(nil))
+	}) {
+		t.Error("FluentAssertion.Implements error")
+	}
 }
 
-func TestFluentAssertion_JSONEq(t *testing.T) {
+func TestFluentAssertion_JSONEq_Success(t *testing.T) {
 	if failed(func(so *assertProxy) {
 		so.That(`{"1":"1", "2":2}`).JSONEq(`{"2":2, "1":"1"}`)
 	}) {
@@ -781,9 +858,23 @@ func TestFluentAssertion_JSONEq(t *testing.T) {
 	}) {
 		t.Errorf("FluentAssertion.JSONEq error")
 	}
+}
 
+func TestFluentAssertion_JSONEq_failure(t *testing.T) {
 	if !failed(func(so *assertProxy) {
 		so.That(`{"1":"1", "2":2}`).JSONEq(`{"2":2, "1":"11"}`)
+	}) {
+		t.Errorf("FluentAssertion.JSONEq error")
+	}
+
+	if !failed(func(so *assertProxy) {
+		so.That(`{"1":"1", "2":}`).JSONEq(`{"2":2, "1":"11"}`)
+	}) {
+		t.Errorf("FluentAssertion.JSONEq error")
+	}
+
+	if !failed(func(so *assertProxy) {
+		so.That(`{"1":"1", "2":2}`).JSONEq(`{"2":2, "1":11"}`)
 	}) {
 		t.Errorf("FluentAssertion.JSONEq error")
 	}

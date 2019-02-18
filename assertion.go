@@ -281,9 +281,11 @@ func (assert *FluentAssertion) Implements(interfaceObject interface{}, msgAndArg
 
 	if assert.actual == nil {
 		Fail(assert, fmt.Sprintf("Cannot check if nil implements %v", interfaceType), msgAndArgs...)
+		return assert
 	}
 	if !reflect.TypeOf(assert.actual).Implements(interfaceType) {
 		Fail(assert, fmt.Sprintf("%T must implement %v", assert.actual, interfaceType), msgAndArgs...)
+		return assert
 	}
 	return assert
 }
